@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSEChat } from "@/hooks/useSSEChat";
+import { useSiblingEvents } from "@/hooks/useSiblingEvents";
 import { useCharacterStatus } from "@/hooks/useCharacterStatus";
 import StatusBar from "@/components/StatusBar";
 import CharacterTabs from "@/components/CharacterTabs";
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
-import type { CharacterId } from "@/lib/types";
+import type { CharacterId, ChatMessage as ChatMessageType } from "@/lib/types";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -30,7 +31,16 @@ export default function ChatPage() {
     clearMessages,
   } = useSSEChat(characterId);
 
+  const { siblingMessages, clearSiblingMessages } = useSiblingEvents(characterId);
   const { status, updateFromSSE } = useCharacterStatus(characterId);
+
+  // 채팅 + 자매 메시지를 시간순으로 병합
+  const allMessages = useMemo<ChatMessageType[]>(() => {
+    if (siblingMessages.length === 0) return messages;
+    return [...messages, ...siblingMessages].sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    );
+  }, [messages, siblingMessages]);
 
   // 인증 체크
   useEffect(() => {
@@ -58,7 +68,7 @@ export default function ChatPage() {
     if (autoScroll) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, autoScroll]);
+  }, [allMessages, autoScroll]);
 
   // 스크롤 위치 감지 (사용자가 위로 스크롤하면 자동스크롤 비활성)
   const handleScroll = useCallback(() => {
@@ -76,8 +86,9 @@ export default function ChatPage() {
       if (newId === characterId || isStreaming) return;
       setCharacterId(newId);
       clearMessages();
+      clearSiblingMessages();
     },
-    [characterId, isStreaming, clearMessages]
+    [characterId, isStreaming, clearMessages, clearSiblingMessages]
   );
 
   // 메시지 전송
@@ -117,7 +128,7 @@ export default function ChatPage() {
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto hide-scrollbar py-2"
       >
-        {messages.length === 0 ? (
+        {allMessages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center h-full text-center px-6">
             <div className="text-4xl mb-3">
               {characterId === "naruen" ? "🐰" : "💎"}
@@ -130,7 +141,7 @@ export default function ChatPage() {
           </div>
         ) : (
           <>
-            {messages.map((msg) => (
+            {allMessages.map((msg) => (
               <ChatMessage
                 key={msg.id}
                 message={msg}

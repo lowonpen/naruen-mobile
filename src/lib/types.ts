@@ -90,13 +90,27 @@ export interface InnerState {
 
 export interface ChatMessage {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "sibling";
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
   emotion?: string;
   toolUse?: string; // 도구 사용 중 표시
   imageUrl?: string; // 사용자 이미지 첨부
+  // 자매 대화용
+  isSibling?: boolean;
+  siblingName?: string; // "나른이" | "나린이"
+  siblingId?: string; // "naruen" | "narin" (발화자)
+}
+
+// ========== 자매 대화 SSE 이벤트 ==========
+
+export interface SiblingEvent {
+  type: "sibling_speak" | "sibling_typing" | "sibling_done";
+  speaker: string; // "naruen" | "narin"
+  speaker_name: string; // "나른이" | "나린이"
+  content: string;
+  timestamp: string;
 }
 
 // ========== API 응답 ==========
