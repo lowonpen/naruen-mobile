@@ -19,8 +19,9 @@ export function useCharacterStatus(characterId: CharacterId) {
     }
   }, [characterId]);
 
-  // 초기 로드
+  // characterId 변경 시 이전 상태 즉시 초기화 + 새 상태 로드
   useEffect(() => {
+    setStatus(null);
     setIsLoading(true);
     fetchStatus();
   }, [fetchStatus]);
