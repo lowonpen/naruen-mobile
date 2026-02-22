@@ -107,8 +107,8 @@ export interface ChatMessage {
 
 export interface SiblingEvent {
   type: "sibling_speak" | "sibling_typing" | "sibling_done";
-  speaker: string; // "naruen" | "narin"
-  speaker_name: string; // "나른이" | "나린이"
+  speaker: string; // "naruen" | "narin" | "yangpayang"
+  speaker_name: string; // "나른이" | "나린이" | "양파양"
   content: string;
   timestamp: string;
 }

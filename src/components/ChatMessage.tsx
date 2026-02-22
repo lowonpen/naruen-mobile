@@ -12,10 +12,11 @@ interface ChatMessageProps {
 export default function ChatMessage({ message, characterId }: ChatMessageProps) {
   const isUser = message.role === "user";
   const isSibling = message.isSibling || message.role === "sibling";
+  const isYangpa = isSibling && message.siblingId === "yangpayang";
   const char = CHARACTERS[characterId];
 
   // 자매 메시지: 발화자 캐릭터 정보
-  const siblingChar = isSibling && message.siblingId
+  const siblingChar = isSibling && message.siblingId && !isYangpa
     ? CHARACTERS[message.siblingId as CharacterId]
     : null;
 
@@ -24,19 +25,28 @@ export default function ChatMessage({ message, characterId }: ChatMessageProps) 
 
   return (
     <div className={`flex gap-2 px-3 py-1.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-      {/* 아바타 (assistant + 자매 메시지) */}
+      {/* 아바타 (assistant + 자매 + 양파양 메시지) */}
       {!isUser && (
         <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-base mt-1 ${
-          isSibling ? "bg-purple-100" : "bg-gray-100"
+          isYangpa ? "bg-yellow-100" : isSibling ? "bg-purple-100" : "bg-gray-100"
         }`}>
-          {isSibling && siblingChar ? siblingChar.emoji : char.emoji}
+          {isYangpa ? "🧅" : isSibling && siblingChar ? siblingChar.emoji : char.emoji}
         </div>
       )}
 
       {/* 메시지 버블 */}
       <div className={`max-w-[78%] ${isUser ? "items-end" : "items-start"}`}>
+        {/* 양파양 메시지 라벨 */}
+        {isYangpa && (
+          <div className="mb-0.5 ml-1">
+            <span className="text-[10px] text-yellow-600 font-medium">
+              🧅 양파양
+            </span>
+          </div>
+        )}
+
         {/* 자매 대화 라벨 */}
-        {isSibling && message.siblingName && (
+        {isSibling && !isYangpa && message.siblingName && (
           <div className="mb-0.5 ml-1">
             <span className="text-[10px] text-purple-500 font-medium">
               💜 {message.siblingName}
@@ -56,6 +66,8 @@ export default function ChatMessage({ message, characterId }: ChatMessageProps) 
           className={`px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
             isUser
               ? "bg-blue-500 text-white rounded-br-md"
+              : isYangpa
+              ? "bg-yellow-50 text-gray-800 rounded-bl-md border border-yellow-200"
               : isSibling
               ? "bg-purple-50 text-gray-800 rounded-bl-md border border-purple-200"
               : characterId === "naruen"
