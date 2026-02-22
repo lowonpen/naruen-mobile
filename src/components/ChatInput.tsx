@@ -38,17 +38,14 @@ export default function ChatInput({ onSend, disabled, isSleeping }: ChatInputPro
     [handleSend]
   );
 
-  // 수면 중이면 비활성
-  if (isSleeping) {
-    return (
-      <div className="px-4 py-3 bg-indigo-50 border-t border-indigo-100 text-center text-sm text-indigo-400">
-        💤 지금 자고 있어요... zzZ
-      </div>
-    );
-  }
-
   return (
     <div className="border-t border-gray-200 bg-white safe-area-bottom">
+      {/* 수면 중 안내 (입력은 허용 — 백엔드에서 깨우기/무시 처리) */}
+      {isSleeping && (
+        <div className="px-4 py-1.5 bg-indigo-50 text-center text-xs text-indigo-400">
+          💤 자고 있어요... 말 걸면 깨울 수도 있어요
+        </div>
+      )}
       {/* 이미지 미리보기 */}
       {imagePreview && (
         <div className="pt-2">
