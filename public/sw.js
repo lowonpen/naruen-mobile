@@ -1,5 +1,5 @@
 // 송나른 Service Worker — 정적 에셋 캐싱 (API 제외)
-const CACHE_NAME = "naruen-v1";
+const CACHE_NAME = "naruen-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
