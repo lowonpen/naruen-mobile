@@ -50,6 +50,16 @@ function getDrowsinessLabel(level: number): { emoji: string; label: string } {
   return { emoji: "✨", label: "맑음" };
 }
 
+function getActivityLabel(activity: string | null | undefined): { emoji: string; label: string } | null {
+  if (!activity) return null;
+  const lower = activity.toLowerCase();
+  if (lower.includes("eat") || lower.includes("식사")) return { emoji: "🍚", label: "식사 중" };
+  if (lower.includes("exercis") || lower.includes("운동")) return { emoji: "🏃", label: "운동 중" };
+  if (lower.includes("youtube") || lower.includes("유튜브")) return { emoji: "📺", label: "유튜브" };
+  if (lower.includes("sleep") || lower.includes("nap")) return null; // 수면은 별도 표시
+  return { emoji: "🎯", label: activity };
+}
+
 export default function StatusBar({ characterId, status, currentEmotion }: StatusBarProps) {
   const char = CHARACTERS[characterId];
   const emotion = currentEmotion || status?.emotion;
@@ -72,6 +82,16 @@ export default function StatusBar({ characterId, status, currentEmotion }: Statu
 
       {/* 오른쪽: 상태 아이콘들 */}
       <div className="flex items-center gap-3 text-sm text-gray-600">
+        {/* 현재 활동 (식사 중, 운동 중 등) */}
+        {status?.activity?.current && (() => {
+          const act = getActivityLabel(status.activity.current);
+          return act ? (
+            <span className="flex items-center gap-0.5 text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full animate-pulse" title={status.activity.current}>
+              {act.emoji} {act.label}
+            </span>
+          ) : null;
+        })()}
+
         {/* 감정 */}
         <span title={emotion || "평온"}>
           {getEmotionEmoji(emotion)}

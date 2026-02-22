@@ -7,7 +7,7 @@ export interface SSEEventSpeak {
 
 export interface SSEEventToolUse {
   type: "tool_use";
-  name: string; // "web_search" | "eat_food" | "remember_search"
+  name: string; // "web_search" | "eat_food" | "exercise" | "remember_search"
   input: Record<string, unknown>;
 }
 

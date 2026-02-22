@@ -7,7 +7,8 @@ interface ToolIndicatorProps {
 const TOOL_LABELS: Record<string, { emoji: string; label: string }> = {
   web_search: { emoji: "🔍", label: "검색 중..." },
   remember_search: { emoji: "🧠", label: "기억을 떠올리는 중..." },
-  eat_food: { emoji: "🍚", label: "먹는 중..." },
+  eat_food: { emoji: "🍚", label: "먹으러 가는 중..." },
+  exercise: { emoji: "🏃", label: "운동 시작하는 중..." },
 };
 
 export default function ToolIndicator({ toolName }: ToolIndicatorProps) {
